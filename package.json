@@ -8,7 +8,7 @@
     "dev:client": "webpack-dev-server",
     "dev:server": "nodemon src/server/index.js --exec babel-node",
     "build:server": "babel src/server -d build --source-maps",
-    "starhet": "node build/index.js"
+    "start": "node build/index.js"
   },
   "keywords": [],
   "author": "",
