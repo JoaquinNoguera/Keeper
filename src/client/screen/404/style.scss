@@ -1,0 +1,24 @@
+#notFound-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    h1{
+        font-size: 4em;
+    }
+    h2{
+        font-size: 1.8em;
+    }
+    a{
+        font-size: 1em;
+        text-decoration: none;
+        color: #c47000;
+        display: flex;
+    }
+    a:hover{
+        color: #FD9F02
+    }
+}
