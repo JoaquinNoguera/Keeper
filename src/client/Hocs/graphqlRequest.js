@@ -321,7 +321,7 @@ export default function withRequest(WrappedComponent){
                 fetchPolicy:'no-cache'
             });
 
-            if(networkStatus === 8) return[data,loading,'Server dont responde']
+            if(networkStatus === 8) return[data,loading,'Server dont respond']
             
             return[data,loading,error];
 
@@ -346,7 +346,7 @@ export default function withRequest(WrappedComponent){
         
         const getCards = (section) => {
             const {data,loading,error} = useQuery(GET_CARDS, {
-                variables: {section}
+                variables: {section},fetchPolicy:'no-cache'
             });
             return [data, loading, error];
         }

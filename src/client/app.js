@@ -12,11 +12,7 @@ function App(){
     return(
         <BrowserRouter>
             <Switch>
-                <Protected/>
-                <Route 
-                        component={NotFound}
-                />
-            
+                <Protected/>    
             </Switch>
         </BrowserRouter>
     );

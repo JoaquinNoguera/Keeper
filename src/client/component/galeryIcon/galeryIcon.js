@@ -4,13 +4,21 @@ import './style.scss';
 
 export default function GaleryIcon(props){
     let iconList = [];
-    const {width, height,setPath} = props;
+    
+    const {
+            width, 
+            height,
+            setPath
+        } = props;
     
     for(const icon in svg){
         iconList.push(
             <button
                 key={icon}
-                onClick={()=>{setPath(icon)}}
+                onClick={()=>{
+                                setPath(icon)
+                                }
+                        }
             >
                 <svg 
                     focusable={false} 
@@ -29,7 +37,11 @@ export default function GaleryIcon(props){
     return(
         <div
             id="galery-container"
-            style={{width:width,height:height,minHeight:height}}
+            style={{
+                        width:width,
+                        height:height,
+                        minHeight:height
+                    }}
         >
             {iconList}
         </div>

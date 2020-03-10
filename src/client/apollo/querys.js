@@ -16,15 +16,17 @@ mutation singupUser(
             $name:String!, 
             $email:String!, 
             $password:String!){
-singup(input:{
-  name: $name,
-  email: $email,
-  password: $password
-}){
-  user{
-    name
-  }
-}
+                          singup(input:{
+                                        name: $name,
+                                        email: $email,
+                                        password: $password
+                                        }
+                                  )
+                                {
+                                  user{
+                                        name
+                                      }
+                                }
 }
 `
 
@@ -200,32 +202,30 @@ mutation createCard(
 
 export const GET_CARDS = gql `
 query getCards(
-    $section: String!  
-){
-  getCards(section: $section){
-    color
-    title
-    description
-  }
-}
+                $section: String!  
+                ){
+                    getCards(section: $section){
+                                                  color
+                                                  title
+                                                  description
+                                                }
+                }
 `
 
 export const DELETE_CARD = gql `
 mutation deleteCard(
-    $section: String!,
-    $card: String!
-){
-  deleteCard(
-    section: $section,
-    card: $card
-  ){
-      color
-      title
-      description
-  }
-}
-
-`
+                    $section: String!,
+                    $card: String!
+                    ){
+                      deleteCard(
+                                  section: $section,
+                                  card: $card
+                                  ){
+                                    color
+                                    title
+                                    description
+                      }
+}`
 
 export const EDIT_CARD = gql `
 mutation editCard(
