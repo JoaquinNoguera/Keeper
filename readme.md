@@ -1,0 +1,2 @@
+# Keeper
+Bienvenidos a keeper. Keeper es una aplicación para guardar notas distribuidas en diferentes secciónes. El objetivo de la misma es, además de hacer una aplicación para el almacenamiento de notas, practicar la integración de una SPA hecha en react, con una GraphQL APi.
