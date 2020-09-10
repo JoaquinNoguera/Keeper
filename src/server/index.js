@@ -1,26 +1,26 @@
-const express = require('express');
-
-const html = require('./routes/html')
-
-const api = require('./routes/api');
-
-const config = require('./env');
-
-const connect = require('./db');
-
-const {port} = config;
-
-const path = require('path');
+import express from 'express';
+import  html from './routes/html';
+import api from './routes/api';
+import connect from './db';
+import cookieParser from "cookie-parser";
+import path from 'path';
 
 const app = express();
 
-app.use(express.static(path.join(__dirname,'client')));
+
+app.use(express.static(path.join(__dirname,'views')));
+app.set("port", process.env.PORT);
 
 connect();
 
+app.use(express.json());
+app.use(cookieParser());
 app.use('/api',api);
 app.use('*',html);
 
-app.listen(port,console.log(`Server is running in port ${port}`));
+app.listen(
+    app.get("port"),
+    console.log(`Server is running`)
+);
 
 

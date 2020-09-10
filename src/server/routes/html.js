@@ -1,12 +1,12 @@
-const express = require('express');
-const path = require('path');
+import express from 'express';
+import path from 'path';
 
 const html= express();
 
 html.get('*',(_,res)=> {
-    res.sendFile(path.join(__dirname + '/client/index.html'))
+    res.sendFile(path.join(__dirname + '/views/index.html'))
 });
 
-module.exports = html;
+export default html;
 
 

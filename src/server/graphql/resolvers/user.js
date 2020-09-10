@@ -1,32 +1,16 @@
-const User = require ('../../db/models/user');
-const sendTokens = require('../../auth').sendTokens;
-const createRefreshToken = require('../../auth').createRefreshToken;
-const createAccessToken = require('../../auth').createAccessToken;
-const userAuthenticate = require('../../auth').userAuthenticate;
-const isAuthenticate = require('../../auth').isAuthenticate;
-const isAuthorization = require('../../auth').isAuthorization;
-const clearTokens = require('../../auth').clearTokens;
-const generateRecoveryCode = require('../../utils').generateRecoveryCode;
-const createHash = require('crypto').createHash;
-const sendEmail = require('../../sendgrid').sendEmail; 
+import User from '../../db/models/user';
+
+import  { generateRecoveryCode } from '../../utils';
+import  { createHash } from 'crypto';
+
+import { getUser, authenticateUser, logOff} from '../../security';
+import  { sendRecoveryEmail } from '../../mail';
 
 const resolvers = {
     Query:{
         currentUser: async (_,args,context)=> {   
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
             return {user};
-        },
-        getAccessUser: (_,args,context) => {
-
-            if(isAuthorization(context)) {
-                return 2;
-                
-            }
-                
-            if(isAuthenticate(context)) {
-                return 1;
-            }
-            return 0;
         },
         getUserByCode: async (_,{code}) =>{
             const user = await User.findOne({
@@ -40,7 +24,7 @@ const resolvers = {
             return {user};
         },
         getCards: async(_,{section},context) =>{
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             const index = user.section.findIndex(element => element.title.toUpperCase() === section.toUpperCase());
             
@@ -51,7 +35,7 @@ const resolvers = {
         
     },
     Mutation: {
-        login: async (_, {username,password},context) => {
+        login: async (_, {username,password},{ res }) => {
             
             const user = await User.findOne({ 
                 $or: [
@@ -68,15 +52,12 @@ const resolvers = {
            
             if (!valid) throw new Error ("El usuario que ha ingresado es invalido o no existe");
             
-            sendTokens(context,
-                                createRefreshToken(user),
-                                createAccessToken(user)
-                        );
+            authenticateUser({ user, res });
 
             return {user};
         },
 
-        singup: async (_, {input}, context) => {
+        singup: async (_, {input}, { res }) => {
             
             const {name, email,password} = input;
       
@@ -100,22 +81,17 @@ const resolvers = {
 
             newUser.save();
       
-    
-
-            sendTokens(context,
-                                createRefreshToken(newUser),
-                                createAccessToken(newUser)
-                        );
+            authenticateUser({ user, res });
       
             return {user: newUser};
         },
-        logout: (_,arg,context) =>{
-            clearTokens(context);
+        logout: (_, {}, { res } ) =>{
+            logOff({ res });
             return true;
         },
         changePassword: async (_, {oldPassword,newPassword},context) => {
             
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             let valid = user.validPassword(oldPassword);
 
@@ -127,25 +103,20 @@ const resolvers = {
 
             if(!valid) throw new Error('Ha ocurrido un error, por favor intentelo mas tarde');
 
-            sendTokens(context,
-                createRefreshToken(user),
-                createAccessToken(user)
-            );
+            authenticateUser( { user, res: context.res })
             
             return true;
         },
 
         newAccessToken: async (_,{password},context) => {
             
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             if(!user) throw new Error('El usuario no esta autentificado');
             
             if(!user.validPassword(password)) throw new Error('La contraseña es incorrecta'); 
             
-            sendTokens(context,
-                        createRefreshToken(user),
-                        createAccessToken(user));
+            authenticateUser( { user, res: context.res })
             
             return true;
         },
@@ -167,10 +138,10 @@ const resolvers = {
            
             user.save();
 
-            sendEmail('CODE',{
+            sendRecoveryEmail({
                 email: user.email,
                 code: code,
-                user: user.name,
+                username: user.name,
             });
            
             return true;
@@ -203,7 +174,8 @@ const resolvers = {
         },
         createSection: async (_,{input},context) =>{
             const {color,icon,title,description} = input;
-            const user = await userAuthenticate(context);
+            
+            const user = await getUser({ req: context })
 
             const valid = user.section.find(element => element.title.toUpperCase() === title.toUpperCase());
             if(valid) throw new Error('Ya hay una sección creada con ese nombre');
@@ -217,7 +189,7 @@ const resolvers = {
             
         },
         deleteSection: async (_,{title},context) =>{
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
             const valid = user.section.findIndex(element => element.title.toUpperCase() === title.toUpperCase());
             user.section.splice(valid,1);
             user.save()
@@ -225,7 +197,7 @@ const resolvers = {
         },
         editSection: async (_,{oldTitle,input},context) =>{
             const {color,icon,title,description} = input;
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
             const index = user.section.findIndex(element => element.title.toUpperCase() === oldTitle.toUpperCase());
             if(title !== oldTitle){
                 const valid = user.section.findIndex(element => element.title.toUpperCase() === title.toUpperCase());
@@ -241,7 +213,7 @@ const resolvers = {
         createCard: async (_,{section,input},context) => {
             const {color,title,description} = input;
 
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             const index = user.section.findIndex(element => element.title.toUpperCase() === section.toUpperCase());
 
@@ -262,7 +234,7 @@ const resolvers = {
         },
         deleteCard: async(_,{section, card},context) => {
 
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             const valid = user.section.findIndex(element => element.title.toUpperCase() === section.toUpperCase());
 
@@ -282,7 +254,7 @@ const resolvers = {
 
             const {color,title,description} = input;
 
-            const user = await userAuthenticate(context);
+            const user = await getUser({ req: context })
 
             const valid = user.section.findIndex(element => element.title.toUpperCase() === section.toUpperCase());
 
@@ -304,4 +276,4 @@ const resolvers = {
 
 };
 
-module.exports = resolvers;
+export default resolvers;

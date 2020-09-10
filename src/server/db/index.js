@@ -1,11 +1,9 @@
-const mongoose = require("mongoose");
-const config = require('../env');
+import mongoose from "mongoose";
 
-const { urlDB } = config;
-
-module.exports = async function connect() {
+export default async function connect() {
     try{
-        await mongoose.connect(urlDB, {
+        await mongoose.connect(
+            process.env.URL_DB, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false

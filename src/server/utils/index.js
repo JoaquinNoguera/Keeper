@@ -1,4 +1,4 @@
-module.exports.generateRecoveryCode = function generateRecoveryCode(length) {
+export function generateRecoveryCode (length) {
     let result = '';
     
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

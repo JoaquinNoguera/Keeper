@@ -1,5 +1,5 @@
-const resolvers = require('../resolvers/user');
-const makeExecutableSchema = require('graphql-tools').makeExecutableSchema;
+import resolvers from '../resolvers/user';
+import { makeExecutableSchema } from 'graphql-tools';
 
 const typeDefs = `
     type AuthPayload {
@@ -47,7 +47,6 @@ const typeDefs = `
 
     type Query {
         currentUser: AuthPayload
-        getAccessUser: Int
         getUserByCode(code: String!): AuthPayload
         getCards(section: String!): [Card]
     }
@@ -74,4 +73,4 @@ const schema = makeExecutableSchema({
     resolvers
 });
 
-module.exports = schema; 
+export default schema; 
