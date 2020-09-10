@@ -2,10 +2,11 @@ const User = require ('../../db/models/user');
 const generateRecoveryCode = require('../../utils').generateRecoveryCode;
 const { getUser, authenticateUser, logOff} = require('../../security');
 const { sendRecoveryEmail } = require('../../mail');
+const createHash = require('crypto').createHash;
 
 const resolvers = {
     Query:{
-        authenticate: async ( _ , {} , context) => {
+        authenticate: ( _ , {} , context) => {
             const user = getUser({ req: context });
             return { user };
         },
@@ -32,8 +33,7 @@ const resolvers = {
         
     },
     Mutation: {
-        login: async (_, {username,password},{ res }) => {
-            
+        login: async (_, { username, password },{ res }) => {
             const user = await User.findOne({ 
                 $or: [
                     {name: username},
@@ -51,7 +51,9 @@ const resolvers = {
             
             authenticateUser({ user, res });
 
-            return {user};
+            console.log(user)
+
+            return { user };
         },
         singup: async (_, { input }, { res } ) => {
             
@@ -112,7 +114,7 @@ const resolvers = {
                 ]
             });
         
-            if(!user) throw new Error('');
+            if(!user) throw new Error(' El usuario no existe ' );
             
             const code = generateRecoveryCode(5);
 
@@ -132,7 +134,7 @@ const resolvers = {
             const user = await User.findOne({
                 recoveryCode: createHash("sha256").update(code).digest("hex")
             });
-
+            
             if(!user) throw new Error('El codigo que ha ingresado es invalido');
 
             user.password = user.generateHash(newPassword);
@@ -147,7 +149,6 @@ const resolvers = {
                                                     .update(code)
                                                     .digest("hex")
             });
-
             if(!user) throw new Error('El codigo que ha ingresado es invalido');  
             return true;
         },

@@ -4,6 +4,11 @@ Esta es una GraphQL API hecha en node, mas específicamente exress.js, junto a M
     > https://keeper-notess.herokuapp.com/
 
 Al acceder a la url uno va a poder realizar Querys y Mutaciones con la ayuda del asistente de de GraphQl.
+## Tecnologías
+- Node.js
+- Express.js
+- GraphQL
+- MongoDB
 
 ## Instalación
 Lo único que se requiere para su su uso es tener previamente instalado node.js.
@@ -65,7 +70,12 @@ Es la clase que representa las diferentes notas que contiene cada una de las sec
 - description: String
 
 ### Distribución del proyecto
-
+- db: se configura la base de datos y se declaran
+- graphql
+- mail
+- security: estan los archivos que se encargan del manejo de los jwt y las cookies para la seguridad de autentificación de usuarios.
+- utils: se ecuentran funciones utiles varias.
+- index.js: es el archivo inicial de la aplicación donde se configura el servidor. 
 ### Querys
 
 - authenticate: { User }

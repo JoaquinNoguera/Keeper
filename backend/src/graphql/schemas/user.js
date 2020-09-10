@@ -55,10 +55,10 @@ const typeDefs = `
     }
 
     type Mutation {
-        checkCode(code: String!): Boolean
-        changePassword(oldPassword: String!, newPassword: String!): Boolean
         login(username: String!, password: String!): AuthPayload
         singup(input: UserInput): AuthPayload
+        checkCode(code: String!): Boolean
+        changePassword(oldPassword: String!, newPassword: String!): Boolean
         logout: Boolean
         sendCodEmail(username:String!): Boolean
         recoveryPassword(code:String!,newPassword: String!): Boolean

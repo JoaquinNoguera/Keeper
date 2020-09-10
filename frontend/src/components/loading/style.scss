@@ -1,0 +1,30 @@
+
+#loading{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    h1{
+        text-justify: center;
+    }
+    svg{
+        width: 100px;
+        height: 100px;
+        rect{
+            width: 100px;
+            height: 100px;
+            fill: none;
+            stroke-width: 100px;
+            stroke: #FFE080;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 50%;
+            animation: animate 1.2s linear infinite;
+        }
+    }
+
+    @keyframes animate{
+        to{
+            stroke-dashoffset: 250%;
+        }
+    }
+}

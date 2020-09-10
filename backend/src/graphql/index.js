@@ -9,7 +9,7 @@ const graphQLServer = express();
 //configuración del setvidor de graphQL
 graphQLServer.use('/',graphqlHTTP({
     schema: schema,
-    graphiql: true
+    graphiql: true,
   }));
 
 module.exports = graphQLServer;

@@ -1,61 +1,108 @@
-import React, {useState} from 'react';
-import Navbar from '../../component/navbar';
-import Section from './section'
-import Loading from '../../component/loading';
-import withRequest from '../../Hocs/graphqlRequest';
-import Config from './Config';
-import SectionBoard from './sectionBoard';
-import NotFound from '../404';
-import { Route,Switch } from 'react-router-dom';
+import React from 'react';
+import { connect } from 'react-redux';
+import { svg } from '../../data';
+import Navbar from '../../components/navbar';
+import useInput from '../../utils/useInput';
+import CardSection from './card-section';
+import CreateNewSection from './create-new-section';
 
-function Board(props){
+const Board = ( props ) => {
+
+    const { sections } = props;
+
+    const [ find, findInput ] = useInput(
+        {
+            type:"text",
+            placeholder:"Filtrar seccion",
+            required: true,
+            className:"rest",
+            init:""
+        }
+    );
+
+    const re = new RegExp(`(${ find })`);
     
-    const {querys} = props;
+    const listSections = sections.map((s)=>{
+        const {title, description, icon, color} = s;
 
+        if(find === "" || title.search(re) !== -1){
+            return <CardSection
+                        key={ title }
+                        title={ title }
+                        description={ description }
+                        colorName={ color }
+                        path={ icon }
+                    />
+        }  
+        return null;
+    });
     
-    const [data,loading] = querys('GET_CURRENT_USER');
-    const[sections,setSections] = useState(null);
+    const [showModal, setShowModal] = React.useState( false );
 
-    if(loading) return  <div className="center">
-                            <Loading/>
-                        </div>
-    else{
-        const {name, email,section} = data.currentUser.user;
-        if(!sections) setSections(section);
+
+
     return(
         <>
-            <Navbar
-                name={name}
+            <Navbar/>
+            
+            <CreateNewSection
+                showModal={ showModal }
+                setShowModal={ setShowModal }
+                titleOld=""
+                descriptionOld=""
+                colorOld="AMARILLO"
+                pathOld="ATTACH_FILE_ICON"
+                edit={ false }
             />
-            <Switch>
-            <Route
-                exact path = '/'
-            >
-                <Section
-                    user = {data.currentUser.user}
-                    sections = {sections}
-                    setSections = {setSections}
-                />
-            </Route>
-            <Route
-                exact path='/config'
-            >
-                <Config
-                    name={name}
-                    email={email}
-                />
-            </Route>
-            <Route
-                exact path='/board/:section'
-            > 
-                <SectionBoard/>
-            </Route>
-            <Route
-                component={NotFound}
-            />
-            </Switch>
-        </>);
-    }
+   
+             <div id="section-conteiner">
+        
+                <div className="menu">
+                    <button
+                        className="add"
+                        onClick={()=>{
+                                        setShowModal( true );
+                                    }
+                                }
+                    >
+                        <svg 
+                            focusable={ false } 
+                            viewBox="0 0 24 24" 
+                            aria-hidden={ true } 
+                            role="presentation"
+                        >
+                            <path
+                                d={svg['ADD_CIRCLE_OUTLINE_ICON']}
+                            />
+                        </svg>
+                        
+                        <p> Nueva sección </p>
+                    </button>
+
+ 
+                    { findInput }
+         
+                </div>
+                
+                <div
+                    style={{
+                        display:'flex',
+                        justifyContent:'center',
+                        alignItems:'center',
+                        flexWrap: 'wrap'
+                    }}
+                >
+                    { listSections }
+
+                </div>
+            </div>
+        </>
+    );
 }
 
-export default withRequest(Board)
+const mapSatateToProps = props => ({
+    sections: props.section.sections
+});
+
+
+export default connect( mapSatateToProps ) ( Board );

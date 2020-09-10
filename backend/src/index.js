@@ -12,7 +12,7 @@ app.set("port", process.env.PORT);
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use("/",graphQLServer);
+app.use("/api/",graphQLServer);
 
 //conexión a la base de datos
 connect();
