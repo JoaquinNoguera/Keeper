@@ -1,0 +1,49 @@
+{
+  "name": "keeper",
+  "version": "1.0.1",
+  "description": "Una aplicacion web para almacenar notas",
+  "main": "index.js",
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.1.2",
+    "react-router-redux": "^4.0.8",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.0",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.2",
+    "@babel/preset-react": "^7.8.0",
+    "@babel/runtime": "^7.10.2",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.4.2",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.1.2",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "scripts": {
+    "build": "npx webpack --mode production",
+    "dev": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaquinNoguera/keeper.git"
+  },
+  "author": "nvjoaquin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoaquinNoguera/keeper/issues"
+  },
+  "homepage": "https://github.com/JoaquinNoguera/keeper#readme"
+}
