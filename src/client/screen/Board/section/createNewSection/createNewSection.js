@@ -1,15 +1,24 @@
 import React, {useState} from 'react';
-import Modal from '../../../../component/modal';
-import useInput from '../../../../hooks/useInput';
-import useTextArea from '../../../../hooks/useTextArea';
-import GaleryIcon from '../../../../component/galeryIcon';
-import withRequest from '../../../../Hocs/graphqlRequest';
+import Modal from '../../../../components/modal';
+import useInput from '../../../../components/useInput';
+import useTextArea from '../../../../components/useTextArea';
+import GaleryIcon from '../../../../components/galeryIcon';
 import {color} from '../../../../type'
 import CardModal from '../cardSection';
+import makeRequest from '../../../../utils/makeRequest';
+import { EDIT_SECTION, CREATE_SECTION } from '../../../../graphQL/querys';
 import './style.scss'
 
 function CreateNewSection(props){
-    const {showModal, setShowModal,titleOld,descriptionOld,colorOld,pathOld, edit,mutation,setSections} = props;
+    const {
+        showModal, 
+        setShowModal,
+        titleOld,
+        descriptionOld,
+        colorOld,
+        pathOld, 
+        edit,
+        setSections} = props;
 
     const [title,titleInput] = useInput(
         {
@@ -48,24 +57,38 @@ function CreateNewSection(props){
     }
     const onSubmit = async () => {
         if(edit){
-            const [data,response] = await mutation('EDIT_SECTION',{
-                                                    color:colorName,icon: path,title,description,
-                                                    oldTitle: titleOld
-                                                });
-            if(data){
+            const { error, response } = await makeRequest({
+                query: EDIT_SECTION,
+                variables: {
+                    color:colorName,
+                    icon: path,
+                    title,
+                    description,
+                    oldTitle: titleOld
+                }});
+
+
+            if( response ){
                         setShowModal(false);
-                        setSections(response.user.section)
+                        setSections(response.editSection.user.section)
                     }else{
-                        setMessage(response);
+                        setMessage(error[0].message);
                         setError(true);
                     }
             }else{
-            const[data,response] = await mutation('CREATE_SECTION',{color:colorName,icon: path,title,description});
-            if(data){
-                setSections(response.user.section)
+            const { response, error } = await makeRequest({
+                query: CREATE_SECTION,
+                variables: {
+                    color:colorName,
+                    icon: path,
+                    title,
+                    description
+                }});
+            if( response ){
+                setSections(response.createSection.user.section)
                 setShowModal(false);
             }else{
-                setMessage(response);
+                setMessage(error[0].message);
                 setError(true);
             }
         }
@@ -155,4 +178,4 @@ function CreateNewSection(props){
     );
 }
 
-export default withRequest(CreateNewSection);
+export default CreateNewSection;

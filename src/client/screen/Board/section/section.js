@@ -1,13 +1,16 @@
 import React, {useState} from 'react';
-import useInput from '../../../hooks/useInput';
+import useInput from '../../../components/useInput';
 import CreateNewSection from './createNewSection';
 import CardSection from './cardSection'
-import {svg} from '../../../type';
+import { svg } from '../../../type';
 import './style.scss';
 
 export default function Section(props){
     
+   
+
     const {sections,setSections} = props;
+    
     const [find,findInput] = useInput(
         {
             type:"text",

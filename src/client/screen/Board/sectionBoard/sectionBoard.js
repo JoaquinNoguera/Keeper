@@ -1,21 +1,22 @@
-import React, {useState} from 'react';
-import useInput from '../../../hooks/useInput';
-import withRequest from '../../../Hocs/graphqlRequest';
+import React, { useState, useEffect } from 'react';
+import useInput from '../../../components/useInput';
 import EditCard from './editCard';
 import Card from './Card';
-import Loading from '../../../component/loading';
-import {withRouter} from 'react-router-dom';
-import {svg} from '../../../type';
+import Loading from '../../../components/loading';
+import { withRouter } from 'react-router-dom';
+import { svg } from '../../../type';
+import makeRequest from '../../../utils/makeRequest';
+import { GET_CARDS} from '../../../graphQL/querys';
 import './style.scss';
 
 function SectionBoard(props){
     
-    const {querys} = props;
-    
     const section = props.match.params.section;
-    
-    const[showModal,setShowModal] = useState(false);
+    const { history } = props;
 
+    const[showModal,setShowModal] = useState(false);
+    const [loading, toogleLoading ] = useState(true);
+    const[cards,setCards] = useState([]);
     const [find,findInput] = useInput(
         {
             type:"text",
@@ -26,20 +27,33 @@ function SectionBoard(props){
         }
     );
  
-    const [data,loading] = querys('GET_CARDS',{
-        section
-    });
-    
-    const[cards,setCards] = useState(null);
+    const getCards = async () => {
+        const { response, error } = await makeRequest({
+            query: GET_CARDS,
+            variables: {
+                section
+            }
+        });
 
-    if(loading) return  <div className="center">
+        if(response){
+            setCards(response.getCards)
+            toogleLoading( false );
+        }else{
+            history.push('/')
+        }
+    }
+
+    useEffect(() => {
+        getCards();
+    },[])
+    
+  
+
+    if( loading ) return  <div className="center">
                             <Loading/>
                         </div>
     else{
 
-    if(!cards) setCards(data.getCards);
-        
-  
     const re = new RegExp(`(${find})`);
    
     const ListCards = (!cards) ? null : cards.map(card => {
@@ -119,4 +133,4 @@ function SectionBoard(props){
     )
 }}
 
-export default withRequest(withRouter(SectionBoard));
+export default withRouter(SectionBoard);

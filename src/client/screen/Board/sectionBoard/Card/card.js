@@ -1,12 +1,20 @@
-import React, {useState} from 'react';
-import {color} from '../../../../type';
+import React, { useState } from 'react';
+import { color } from '../../../../type';
 import EditCard from '../editCard';
 import './style.scss';
 
 function Card(props){
     
-    const [showModal,setShowModal] = useState(false);
-    const {title,colorName,description,setCards,section} = props;
+    const {
+        title,
+        colorName,
+        description,
+        setCards,
+        section
+    } = props;
+    
+    const [ showModal, setShowModal] = useState(false);
+    
     return(
         <>
         <EditCard

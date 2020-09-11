@@ -1,13 +1,24 @@
 import React, {useState} from 'react';
-import Modal from '../../../../component/modal';
-import useInput from '../../../../hooks/useInput';
-import useTextArea from '../../../../hooks/useTextArea';
-import withRequest from '../../../../Hocs/graphqlRequest';
+import Modal from '../../../../components/modal';
+import useInput from '../../../../components/useInput';
+import useTextArea from '../../../../components/useTextArea';
 import {svg,color} from '../../../../type';
+import makeRequest from '../../../../utils/makeRequest';
+import { CREATE_CARD, EDIT_CARD, DELETE_CARD } from '../../../../graphQL/querys';
+
 
 function EditCard(props){
 
-    const { add, oldTitle, oldDescription, oldColorName, mutation, showModal, setShowModal, section, setCards } = props;
+    const { 
+            add, 
+            oldTitle, 
+            oldDescription, 
+            oldColorName, 
+            showModal, 
+            setShowModal, 
+            section, 
+            setCards 
+    } = props;
     
     const [edit,setEdit] = useState(false);
     
@@ -48,41 +59,58 @@ function EditCard(props){
     }
     
     const createCard = async () => {
-        const [data,response] = await mutation('CREATE_CARD',{
-            title: title, description: description ,color: colorName, section: section
-        })
-        if(data){
-            setCards(response);
+        const { response, error } = await makeRequest({
+            query: CREATE_CARD,
+            variables:{
+                title: title, 
+                description: description ,
+                color: colorName,
+                 section: section
+            }
+        });
+        if(response){
+            setCards(response.createCard);
             setShowModal(false);
         }else{
-            setMessage(response);
+            setMessage(error[0].message);
             setError(true);
         }
     }
 
     const deleteCard = async () => {
-        const [data,response] = await mutation('DELETE_CARD',{
-            card: title, section: section            
-        })
-        if(data){
-            setCards(response);
-            setEdit(false);
-            setShowModal(false);
+        const { response, error } = await makeRequest({
+            query: DELETE_CARD,
+            variables: {
+                card: title, 
+                section: section
+            }
+        });
+
+        if(response){
+            setCards(response.deleteCard);
         }else{
-            setMessage(response);
+            setMessage(error[0].message);
             setError(true);
         }
     }
 
     const editCard = async () => {
-        const [data,response] = await mutation('EDIT_CARD',{
-            card: oldTitle, section: section, title: title, description: description, color: colorName
-        })
-        if(data){
-            setCards(response);
-            setShowModal(false);
+        const { response, error } = await makeRequest({
+            query: EDIT_CARD,
+            variables: {
+                card: oldTitle, 
+                section: section, 
+                title: title, 
+                description: description, 
+                color: colorName
+            }
+        });
+
+        if(response){
+            setEdit(false);
+            setCards(response.editCard);
         }else{
-            setMessage(response);
+            setMessage(error[0].message);
             setError(true);
         }
     }
@@ -238,4 +266,4 @@ function EditCard(props){
 }
 
 
-export default withRequest(EditCard);
+export default EditCard;

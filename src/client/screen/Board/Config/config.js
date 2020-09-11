@@ -1,12 +1,12 @@
-import React,{useState} from 'react';
-import useInput from '../../../hooks/useInput';
-import Modal from '../../../component/modal';
-import withRequest from '../../../Hocs/graphqlRequest';
+import React, { useState } from 'react';
+import useInput from '../../../components/useInput';
+import Modal from '../../../components/modal';
+import makeRequest from '../../../utils/makeRequest';
+import { CHANGE_PASSWORD } from '../../../graphQL/querys'
 import './style.scss';
 
-function Config(props){
-    
-    const { name , email, mutation } = props;
+function Config( props ){
+    const { name , email } = props;
 
     const [newPassword,newPasswordInput] = useInput(
         {
@@ -48,14 +48,16 @@ function Config(props){
 
     const changePassword = async () => {
         setShowModal(false);
-        const [data,response] = await mutation('CHANGE_PASSWORD',{
-                                                            newPassword: newPassword,
-                                                            repeat: repeat,
-                                                            oldPassword: password,
-                                                                }
-                                            )
-        if(!data) {
-            setMessage(response);
+        const { response, error} = await makeRequest({
+            query: CHANGE_PASSWORD,
+            variables: {
+                newPassword: newPassword,
+                repeat: repeat,
+                oldPassword: password,
+            }
+        })
+        if( error ) {
+            setMessage( error[0].message );
             setError(true);
             setShowMessage(true);
         }else{
@@ -102,8 +104,8 @@ function Config(props){
 
 
                 <form
-                    onSubmit={()=> {
-                        event.preventDefault();
+                    onSubmit={(e)=> {
+                        e.preventDefault();
                         setShowModal(true);
                     }}
                 >
@@ -149,4 +151,4 @@ function Config(props){
 
 
 
-export default withRequest(Config);
+export default Config;

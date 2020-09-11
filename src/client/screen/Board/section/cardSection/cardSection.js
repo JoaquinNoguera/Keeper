@@ -1,19 +1,26 @@
-import React,{useState} from 'react';
-import {color,svg} from '../../../../type';
-import useInput from '../../../../hooks/useInput';
-import Modal from '../../../../component/modal';
-import withRequest from '../../../../Hocs/graphqlRequest';
+import React,{ useState, useEffect } from 'react';
+import { color, svg } from '../../../../type';
+import useInput from '../../../../components/useInput';
+import Modal from '../../../../components/modal';
 import CreateNewSection from '../createNewSection';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import makeRequest from '../../../../utils/makeRequest';
+import { DELETE_SECTION } from '../../../../graphQL/querys';
 import './style.scss';
 
 function CardSection(props){
 
-    const {title,description,colorName,path,className,mutation,setSections} = props;
+    const { 
+        title,
+        description,
+        colorName,
+        path,
+        className,
+        setSections
+    } = props;
     
     const[showConfirm,setShowConfirm] = useState(false);
     const[showEdit,setEdit] = useState(false);
-
     const[error,setError] = useState(false);
     const[message,setMesage] = useState("");
 
@@ -31,15 +38,18 @@ function CardSection(props){
 
     const deleteThis = async () => {
         
-        const [data, response] = await mutation(
-                                'DELETE_SECTION',
-                                {title}
-                                );
-        if(data){
+        const { error, response } = await makeRequest({
+            query: DELETE_SECTION,
+            variables: {
+                title
+            }
+        });
+
+        if( response ){
             setShowConfirm(false);
-            setSections(response.user.section);
+            setSections( response.deleteSection.user.section );
         }else{
-            setMesage(response);
+            setMesage( error[0].message );
             setError(true);
         }
     }
@@ -178,4 +188,4 @@ function CardSection(props){
     );
 }
 
-export default withRequest(CardSection);
+export default CardSection;

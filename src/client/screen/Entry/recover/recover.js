@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
-import withRequest from '../../../Hocs/graphqlRequest';
-import useInput from '../../../hooks/useInput';
+import useInput from '../../../components/useInput';
+
+
+import makeRequest from '../../../utils/makeRequest';
+import { CHECK_CODE } from '../../../graphQL/querys';
 
 function Recover(props){
     
-    const { mutation, history } = props;
+    const { history } = props;
 
     const [code,codeInput] = useInput(
         {
@@ -22,11 +25,11 @@ function Recover(props){
     const [message,setMessage] = useState('');
 
     const handleSubmit = async () => {
-        const [data,response] = await mutation('CHECK_CODE',{
+        const { error } = await makeRequest(CHECK_CODE,{
             code: code
         });
-        if(!data) {
-            setMessage(response);
+        if(error) {
+            setMessage(error[0].message);
             setShow(true);
         }else{
             history.push(`/recover/${code}`)
@@ -108,4 +111,4 @@ function Recover(props){
     );
 }
 
-export default withRequest(Recover);
+export default Recover;

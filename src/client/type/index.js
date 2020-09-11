@@ -1,9 +1,3 @@
-export const access = {
-    UNKNOWN:0,
-    AUTHENTICATE: 1,
-    AUTHORIZE: 2,
-}
-
 export const color = {
     ROSADO: {
         card: "#f7cedb",

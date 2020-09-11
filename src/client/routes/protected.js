@@ -1,41 +1,46 @@
 import React,{useEffect, useState} from 'react';
-import withRequest from '../Hocs/graphqlRequest';
-import Loading from '../component/loading';
-import Routes from './routes'
-import ServerUnavailable from '../screen/504';
+import makeRequest from '../utils/makeRequest';
+import { GET_CURRENT_USER } from '../graphQL/querys';
+import Loading from '../components/loading';
+import Entry from '../screen/Entry';
+import Board from '../screen/Board';
 
+function Protected(){
 
-function Protected(props){
+    const [loading,toogleLoading] = useState(true);
+    const [ user, setUser] = useState(null);
     
-    const {querys} = props;
-    
-    const [data,loading,error] = querys('GET_ACCESS_USER');
-    
-    const [userAccess,setUserAccess] = useState(null);
-
-    useEffect(() => {
-        if(!loading && data) {
-            setUserAccess(data.getAccessUser)
+    const getCurrentUser = async () => {
+        const { response, error } = await makeRequest( { query: GET_CURRENT_USER } )
+        if( response ){
+            setUser(response.currentUser.user)
         }
-
-    }, [loading]);
-    
-    if(error === 'Server dont respond') return <ServerUnavailable />
-
-    if(userAccess === null){
-    
-        return <div className="center">
-                    <Loading/>
-                </div>}
-    
-    else{
-
-        return <Routes 
-                        userAccess={userAccess} 
-                        setUserAccess={setUserAccess}
-                />;
-    
+        toogleLoading(false);
     }
+
+
+    useEffect( () =>{
+        getCurrentUser();
+    },[]);
+
+    if( loading ){
+        return  <div className="center">
+                     <Loading/>
+                </div>
+    }else{
+        if( user ){
+            return <Board
+                        user={ user }
+                        setUser={setUser}
+                    />
+        }else{
+            return <Entry setUser={setUser} />
+        }
+    }
+
+
+    return <Board/>;
+
 }
 
-export default withRequest(Protected);
+export default Protected;

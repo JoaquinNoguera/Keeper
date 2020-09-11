@@ -84,7 +84,7 @@ return{
         new HtmlWebpackPlugin({
           template: path.resolve(__dirname,'src','client','public','index.html'),
           filename: './index.html',
-          favicon: path.resolve(__dirname,'src','client','public','favicon.png')
+          favicon: path.resolve(__dirname,'src','client','public','bloc.png')
         }),
         new MiniCssExtractPlugin({
           filename: 'assets/[name].css',

@@ -1,5 +1,9 @@
 import React from 'react';
-import {Switch,Route,Redirect} from 'react-router-dom';
+import {
+    Switch,
+    Route,
+    Redirect
+} from 'react-router-dom';
 import SingIn from './singin';
 import SingUp from './singup';
 import Forgot from './forgot';
@@ -7,7 +11,7 @@ import Recover from './recover';
 import ChangePassword from './recover/changePassword';
 import './style.scss';
 
-export default function Entry(){
+export default function Entry( { setUser }){
     return(
         <div 
             id="entry-container"
@@ -20,13 +24,19 @@ export default function Entry(){
                     
                     <Route 
                         exact path="/" 
-                        component={SingIn}
-                    />
+                    >
+                        <SingIn
+                            setUser={setUser}
+                        />
+                    </Route>
                     
                     <Route  
                         exact path="/singup" 
-                        component={SingUp}
-                    />
+                    >
+                            <SingUp
+                            setUser={setUser}
+                            />
+                    </Route>
                     
                     <Route 
                         exact path="/forgot" 

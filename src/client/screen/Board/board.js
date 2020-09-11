@@ -1,38 +1,31 @@
-import React, {useState} from 'react';
-import Navbar from '../../component/navbar';
+import React, { useState, useEffect } from 'react';
+import Navbar from '../../components/navbar';
 import Section from './section'
-import Loading from '../../component/loading';
-import withRequest from '../../Hocs/graphqlRequest';
+import Loading from '../../components/loading';
 import Config from './Config';
 import SectionBoard from './sectionBoard';
 import NotFound from '../404';
 import { Route,Switch } from 'react-router-dom';
 
-function Board(props){
-    
-    const {querys} = props;
 
+function Board({ user, setUser }){
     
-    const [data,loading] = querys('GET_CURRENT_USER');
-    const[sections,setSections] = useState(null);
-
-    if(loading) return  <div className="center">
-                            <Loading/>
-                        </div>
-    else{
-        const {name, email,section} = data.currentUser.user;
-        if(!sections) setSections(section);
+    if( user ){
+    const { name, email, section } = user;
+    const[sections,setSections] = useState( section );
+    
     return(
         <>
             <Navbar
                 name={name}
+                setUser={setUser}
             />
             <Switch>
             <Route
                 exact path = '/'
             >
                 <Section
-                    user = {data.currentUser.user}
+                    user = {user}
                     sections = {sections}
                     setSections = {setSections}
                 />
@@ -55,7 +48,13 @@ function Board(props){
             />
             </Switch>
         </>);
+        }else{
+             return (
+                 <div className="center" >
+                     <Loading/>
+                 </div>
+             );
+        }
     }
-}
 
-export default withRequest(Board)
+export default Board;

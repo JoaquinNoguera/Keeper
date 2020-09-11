@@ -1,19 +1,35 @@
-import React,{useState} from 'react';
-import useInput from '../../../../hooks/useInput';
-import withRequest from '../../../../Hocs/graphqlRequest';
-import Loading from '../../../../component/loading';
-import {Link,Redirect} from 'react-router-dom'
-function ChangePassword(props){
-    
-    const { querys, mutation } = props;
-    
-    const code = props.match.params.code;
-    
+import React,{ useState, useEffect } from 'react';
+import useInput from '../../../../components/useInput';
+import Loading from '../../../../components/loading';
+import {Link,Redirect} from 'react-router-dom';
 
-    const [data, loading] = querys('GET_USER_BY_CODE', {
-        code : code
-    });
+import makeRequest from '../../../../utils/makeRequest';
+import { GET_USER_BY_CODE, RECOVERY_PASSWORD } from '../../../../graphQL/querys';
+
+function ChangePassword(props){
+
+    const { history } = props;
+    const code = props.match.params.code;
+
+
+    const [ loading, toogleLoading ] = useState(true);
     
+    
+    const getUser = async () => {
+        const { derror } = await makeRequest({
+            query: GET_USER_BY_CODE,
+            variables: {
+                code : code
+            }});
+            
+        if ( error ) return history.push("/recover");
+        else toogleLoading(true);
+    }
+    
+    useEffect( () => {
+        getUser();
+    }, []);
+
 
     const [newPassword,passwordInput] = useInput(
         {
@@ -42,27 +58,28 @@ function ChangePassword(props){
     const [message,setMessage] = useState('');
 
 
-    if(loading) return <Loading/>
-
-    else if(!data) return <Redirect to="/recover"/>
+    if( loading ) return <Loading/>
 
     else{
         const name = data.getUserByCode.user.name
         const handleSubmit = async () => {
-            const [exist,response]= await mutation('RECOVERY_PASSWORD',{
-                code,
-                newPassword,
-                repeat
+            const { response, error }= await makeRequest({
+                query: RECOVERY_PASSWORD,
+                variables: {
+                    code,
+                    newPassword,
+                    repeat
+                }
             });
 
-            if(!exist){
+            if( error ){
                 setError(true);
-                setMessage(response);
+                setMessage( error[0].message);
             }else{
                 setMessage('La contraseña ha sido cambiada correctamente')
                 setError(false);
             }
-            if(!show)setShow(true);
+            if(! show )setShow(true);
         }
         
         return(
@@ -70,7 +87,7 @@ function ChangePassword(props){
             className="form-wrapper" 
             onSubmit={async (event) => { 
                         event.preventDefault();
-                        await handleSubmit();
+                        handleSubmit();
                         }
                     }
             >
@@ -141,4 +158,4 @@ function ChangePassword(props){
                 
 }
 
-export default withRequest(ChangePassword);
+export default ChangePassword;

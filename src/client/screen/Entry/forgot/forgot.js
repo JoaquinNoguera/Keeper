@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import useInput from '../../../hooks/useInput';
-import withRequest from '../../../Hocs/graphqlRequest';
+import useInput from '../../../components/useInput';
+
+import makeRequest from '../../../utils/makeRequest';
+import { SEND_EMAIL } from '../../../graphQL/querys';
 import {Link} from 'react-router-dom'
 
-function Forgot(props){
+function Forgot(){
 
-    const {mutation} = props;
     
     const [username,usernameInput] = useInput(
         {
@@ -19,9 +20,11 @@ function Forgot(props){
     
     const handleSubmit = async () => {
         
-        await mutation('SEND_EMAIL',{
+        await makeRequest({ 
+            query: SEND_EMAIL,
+        variables: {
             username: username
-        });
+        }});
         
         setShow(true);
         setMessage('Se ha enviado el codigo de recuperación a su correo. Si no lo encuentra revise la carpeta de span');
@@ -108,4 +111,4 @@ function Forgot(props){
     );
 }
 
-export default withRequest(Forgot);
+export default Forgot;

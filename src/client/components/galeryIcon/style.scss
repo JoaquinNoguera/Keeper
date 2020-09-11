@@ -1,0 +1,25 @@
+#galery-container{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    background: #f9f9f9;
+    overflow: auto;
+    padding: 1em;
+    button{
+        width: 5em;
+        height: 5em;
+        overflow: hidden;
+        margin: auto;
+        background: transparent;
+        border: none;
+    }
+    
+    button:hover{
+        box-shadow: 0px 0.1em 0.3em rgba(0, 0, 0, 0.7);
+    }
+
+    svg{
+        width: 3em;
+        height: 3em;
+    }
+}

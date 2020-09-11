@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
-import useInput from '../../../hooks/useInput';
-import whitRequest from '../../../Hocs/graphqlRequest';
-import AccessContext from '../../../context/access';
+import React, { useState } from 'react';
+import {
+    Link
+} from 'react-router-dom';
+import useInput from '../../../components/useInput';
+import makeRequest from '../../../utils/makeRequest';
+import { SUBMIT_USER } from '../../../graphQL/querys';
 
-function SingIn(props){
-    const {mutation} = props;
-    
+function SingIn({ setUser }){
+
     const [username,usernameInput] = useInput(
         {
             type:"text",
@@ -33,37 +34,30 @@ function SingIn(props){
 
     const handleSubmit = async() => {
     
-        const [data,response]= await mutation('SUBMIT_USER',{
-            username: username,
-            password: password
+        const { response, error }= await makeRequest({
+                query: SUBMIT_USER,
+                variables:{
+                        username: username,
+                        password: password
+                }
         });
-    
-        if(!data) {
-    
-            setMessage(response);
+        
+        if( error ) {
+            setMessage(error[0].message);
             setShow(true);
-            return false;
     
         }else{
-    
-            return true;
-    
+            setUser(response.login.user);
         }
     }
     
     return(
-    
-        <AccessContext.Consumer>
-            { (context) =>
                 <form 
                     className="form-wrapper" 
                     onSubmit={async (event) => {
-                                            event.preventDefault(); 
-                                            if(await handleSubmit()) {
-                                                                    context.changeAccess(2);
-                                                                 }
-                                            }
-                            }
+                                        event.preventDefault(); 
+                                        handleSubmit();
+                            }}
                 >
                     <h1 
                         className="title-entry text-center"
@@ -125,9 +119,7 @@ function SingIn(props){
                     Crear Cuenta
                 </Link>
             </form>
-        }
-        </AccessContext.Consumer>
     );
 }
 
-export default whitRequest(SingIn);
+export default SingIn;

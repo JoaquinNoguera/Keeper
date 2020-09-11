@@ -1,12 +1,11 @@
 import React,{useState} from 'react';
 import { Link } from 'react-router-dom';
-import withRequest from '../../../Hocs/graphqlRequest';
-import useInput from '../../../hooks/useInput';
-import AccessContext from '../../../context/access';
+import useInput from '../../../components/useInput';
 
-function SingUp(props){
+import makeRequest from '../../../utils/makeRequest';
+import { SUBMIT_NEWUSER } from '../../../graphQL/querys';
 
-    const {mutation, history} = props;
+function SingUp({ setUser }){
 
     const [username,usernameInput] = useInput(
         {
@@ -54,40 +53,33 @@ function SingUp(props){
 
     const handleSubmit = async() => {
 
-        const [data,response]= await mutation('SUBMIT_NEWUSER',{
-            name: username,
-            email: email,
-            password: password,
-            repeat: repeat
+        const { error } = await makeRequest( {
+            query: SUBMIT_NEWUSER,
+            variables: {    
+                name: username,
+                email: email,
+                password: password,
+                repeat: repeat
+            }
         });
 
-        if(!data) {
-
-            setMessage(response);
+        if( error ) {
+            setMessage( error[0].message );
             setShow(true);
-            return false;
 
         } else{
-
-            return true;
-
+            setUser( response.singup.user )
+            history.push(`/`)
         }
     }
 
     return(
-        <AccessContext.Consumer>
-        { (context) =>
-
             <form 
             className="form-wrapper" 
             onSubmit={async (event) => { 
                 event.preventDefault(); 
-                if(await handleSubmit()) {
-                                            history.push('/');
-                                            context.changeAccess(2);
-                                          }
-                }
-            }
+                handleSubmit()
+            }}
             >
             
             <h1 
@@ -139,10 +131,8 @@ function SingUp(props){
                 >
                 Iniciar sessión
             </Link>
-            </form>  
-    }
-    </AccessContext.Consumer>
+            </form> 
     ); 
 }
 
-export default withRequest(SingUp);
+export default SingUp;
