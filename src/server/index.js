@@ -4,15 +4,16 @@ import api from './routes/api';
 import connect from './db';
 import cookieParser from "cookie-parser";
 import path from 'path';
+import cors from 'cors';
 
 const app = express();
 
 
 app.use(express.static(path.join(__dirname,'views')));
 app.set("port", process.env.PORT);
-
 connect();
 
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api',api);
